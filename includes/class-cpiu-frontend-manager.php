@@ -211,7 +211,9 @@ class CPIU_Frontend_Manager
                 'product_id'   => $product_id,
                 'variation_id' => $variation_id,
                 'permalink'    => $permalink ? wp_parse_url($permalink, PHP_URL_PATH) : '',
-                'name'         => $product ? $product->get_name() : '',
+                // Decoded so "&amp;" / "&#8217;" compare against the rendered
+                // row text, which the browser has already decoded.
+                'name'         => $product ? html_entity_decode($product->get_name(), ENT_QUOTES, 'UTF-8') : '',
                 'heading'      => esc_html__('Uploaded files:', 'nowdigiverse-product-image-upload'),
                 'files'        => $files,
             );
@@ -265,9 +267,13 @@ class CPIU_Frontend_Manager
             );
         }
 
+        // cpiuCartLineCount lets the renderer use its "only one item" fallback
+        // only when the whole cart really is one line. Without it, every other
+        // product in the cart inherited the upload product's thumbnails.
         wp_add_inline_script(
             'cpiu-blocks-integration',
-            'window.cpiuCartData = ' . wp_json_encode($cart_data) . ';',
+            'window.cpiuCartData = ' . wp_json_encode($cart_data) . ';'
+                . 'window.cpiuCartLineCount = ' . absint(count(WC()->cart->get_cart())) . ';',
             'before'
         );
     }

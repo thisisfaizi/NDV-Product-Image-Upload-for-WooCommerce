@@ -370,3 +370,42 @@ check.
 P-030/P-048 rows updated with this same evidence (see that repo's own `LOG.md`/`TASKS.md`) — the code
 exercised lives entirely in shared/base-repo territory plus Pro's pricing cart class, so one pass covers
 both boards rather than repeating the same work twice.
+
+---
+
+## 2026-10-27 — T-011: thumbnails under the wrong product (customer ticket) → 1.1.1
+
+**Who:** `@fe` + `@qa`
+
+**Report:** customer on 1.1.0, one product configured for 10 uploads. With an unconfigured product also in
+the cart, the checkout showed 10 "Uploaded files" boxes under the unconfigured product too.
+
+**Root cause:** `assets/js/cpiu-blocks-integration.js` `matchItemData()` step 3 — "if exactly one cart item
+has uploads, use it" — counted upload items, not cart lines. Checkout order-summary rows carry no product
+link, so the other product's row failed steps 1-2 and fell through to the upload item's data.
+
+**Changed:** `includes/class-cpiu-frontend-manager.php` (emit `window.cpiuCartLineCount`; entity-decode the
+product name), `assets/js/cpiu-blocks-integration.js` (fallback requires `cpiuCartLineCount === 1`;
+`normaliseName()` for curly quotes / dashes). Version 1.1.1 in header, `CPIU_VERSION`, `Stable tag`;
+changelog + upgrade notice.
+
+**Evidence:**
+- jsdom harness (5 cases) against shipped 1.1.0 vs fix: 1.1.0 reproduces the ticket (`[10,10]`), fix `[0,10]`.
+- WP Playground (WordPress latest, WooCommerce latest, PHP 8.3), headless Chrome, products named as in
+  the ticket. Same six scenarios on both builds:
+
+  | Scenario | 1.1.0 | 1.1.1 |
+  |---|---|---|
+  | Block checkout, vintage + pack | vintage 10 ❌ | 0 / 10 ✅ |
+  | Block cart, vintage + pack | vintage 10 ❌ | 0 / 10 ✅ |
+  | Block checkout, pack only (fallback) | 10 ✅ | 10 ✅ |
+  | Block checkout, vintage + `L'été & Co - Pack` | vintage 10 ❌ | 0 / 10 ✅ |
+  | Classic checkout, vintage + pack | vintage 10 ❌ | 0 / 10 ✅ |
+  | Classic cart, vintage + pack | vintage 10 ❌ | 0 / 10 ✅ |
+
+  No JS console errors. Store API order #18 (vintage + pack): vintage line has no `_cpiu_uploaded_images`,
+  pack line has 10 — the bug was display-only.
+- **Not run:** rest of §5.1 (upload/PDF/rejection/cleanup/reactivate/Plugin Check/Pro) — not touched by
+  this change. Line endings: SVN trunk has CRLF in three untouched files; only files with real changes
+  are copied to SVN to keep the release diff minimal.
+

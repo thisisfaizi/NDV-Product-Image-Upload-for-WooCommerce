@@ -80,9 +80,23 @@
     }
 
     /**
+     * Normalise product-name text for comparison: case, whitespace, and the
+     * curly quotes / dashes that wptexturize or the editor may introduce.
+     */
+    function normaliseName(str) {
+        return (str || '')
+            .replace(/[‘’]/g, "'")
+            .replace(/[“”]/g, '"')
+            .replace(/[–—]/g, '-')
+            .replace(/\s+/g, ' ')
+            .trim()
+            .toLowerCase();
+    }
+
+    /**
      * Match a rendered line item to its cart data.
      * Primary signal: an anchor whose href path matches the product permalink.
-     * Fallback: if there is exactly one uploaded-file item in the cart, use it.
+     * Fallback: if the whole cart is a single line item, use its data.
      */
     function matchItemData(itemEl, cartData) {
         var keys = Object.keys(cartData);
@@ -103,18 +117,21 @@
         }
 
         // 2) Product-name match (checkout order summary often has no product link).
-        var text = (itemEl.textContent || '').replace(/\s+/g, ' ').trim().toLowerCase();
+        var text = normaliseName(itemEl.textContent);
         if (text) {
             for (var n = 0; n < keys.length; n++) {
                 var nd = cartData[keys[n]];
-                if (nd.name && text.indexOf(nd.name.toLowerCase()) !== -1) {
+                if (nd.name && text.indexOf(normaliseName(nd.name)) !== -1) {
                     return nd;
                 }
             }
         }
 
-        // 3) Fallback: single uploaded-file item in the whole cart.
-        if (keys.length === 1) {
+        // 3) Fallback: the cart holds exactly one line item and it has uploads.
+        // Checking only the number of upload items is wrong: with one upload
+        // product plus any other product, the other row would get its files.
+        // A missing count (script loaded without cart data) fails closed.
+        if (keys.length === 1 && window.cpiuCartLineCount === 1) {
             return cartData[keys[0]];
         }
 

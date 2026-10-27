@@ -4,7 +4,7 @@ Tags: woocommerce, image upload, product customization, cropping, file upload
 Requires at least: 5.9
 Tested up to: 7.0
 Requires PHP: 7.2
-Stable tag: 1.1.0
+Stable tag: 1.1.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -100,6 +100,10 @@ You choose. On the "Uninstall Preferences" tab you can keep all data (default) o
 
 == Changelog ==
 
+= 1.1.1 =
+* Fixed: on the block cart and checkout, a product with no upload configuration could show another product's uploaded files when both were in the cart. Thumbnails now appear only under the product they were uploaded for. Display only: order data was never affected.
+* Improved: uploaded-file thumbnails now find their product when its name contains curly quotes, dashes or "&".
+
 = 1.1.0 =
 * Added: "Lock quantity to 1" per-product (and default) setting, so customers can't order more than one of a product they upload custom artwork for. Enforced via WooCommerce's own `woocommerce_is_sold_individually` filter, so it never overrides a product already marked "Sold individually".
 * Compatibility: confirmed working against WooCommerce 10.9 (full core-flow regression pass); `WC tested up to` raised from 9.5.
@@ -112,6 +116,9 @@ You choose. On the "Uninstall Preferences" tab you can keep all data (default) o
 * HPOS compatibility and uninstall data preferences.
 
 == Upgrade Notice ==
+
+= 1.1.1 =
+Fixes uploaded-file thumbnails appearing under the wrong product on the block cart and checkout.
 
 = 1.0.0 =
 Initial WordPress.org release.
