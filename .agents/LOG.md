@@ -409,3 +409,17 @@ changelog + upgrade notice.
   this change. Line endings: SVN trunk has CRLF in three untouched files; only files with real changes
   are copied to SVN to keep the release diff minimal.
 
+
+## 2026-10-29 — T-012: GitHub README.md + LICENSE (docs only)
+
+**Changed:** new `README.md` (GitHub landing page; WordPress.org still reads `readme.txt`, untouched) and new
+`LICENSE` (full GPL-2.0 text from gnu.org, matching the `GPLv2 or later` header). README content is taken
+from `readme.txt`: keyword intro, features, install, FAQ highlights, Pro add-on summary, privacy, credits,
+WordPress.org link + shields.io version/installs badges. Screenshots are hot-linked from
+`ps.w.org/nowdigiverse-product-image-upload/assets/screenshot-{1,2,3}.png` (all 200) because the repo's
+`assets/` holds runtime CSS/JS only. Added a short "How it compares" table (Customer Upload Files for
+WooCommerce, WooCommerce Product Add-Ons) with a trademark line.
+
+**Not changed:** `readme.txt`, code, versions, hooks, options.
+
+**Evidence:** `git diff --stat` = README.md, LICENSE, `.agents/` only. Both shields badges resolve.
