@@ -410,7 +410,7 @@ changelog + upgrade notice.
   are copied to SVN to keep the release diff minimal.
 
 
-## 2026-10-29 — T-012: GitHub README.md + LICENSE (docs only)
+## 2026-10-29 — T-012: GitHub README.md + LICENSE (docs only, PR #1)
 
 **Changed:** new `README.md` (GitHub landing page; WordPress.org still reads `readme.txt`, untouched) and new
 `LICENSE` (full GPL-2.0 text from gnu.org, matching the `GPLv2 or later` header). README content is taken
