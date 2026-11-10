@@ -459,3 +459,5 @@ corrupted its SQLite DB under load; rerun with `--workers=1`.
 
 **Resolution (customer, 2026-11-10):** WPS Hide Login was intercepting the admin redirect and serving the
 404. Disabling it restored the NDV page. Not an NDV defect.
+
+**Released (2026-11-10):** WP.org SVN r3793871 (trunk + `tags/1.1.2`, owner ran `svn ci`). Git `0a6d9fc`.
