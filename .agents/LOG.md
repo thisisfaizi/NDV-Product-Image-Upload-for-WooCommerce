@@ -461,3 +461,25 @@ corrupted its SQLite DB under load; rerun with `--workers=1`.
 404. Disabling it restored the NDV page. Not an NDV defect.
 
 **Released (2026-11-10):** WP.org SVN r3793871 (trunk + `tags/1.1.2`, owner ran `svn ci`). Git `0a6d9fc`.
+
+## 2026-11-10 — T-014: informational "Go Pro" CTAs (D-005) → 1.2.0
+
+**Changed:** `cpiu_get_pro_url()`, `cpiu_premium_tabs_registered()`, `cpiu_show_pro_upsell()` + filter
+(main file §13b); Plugins-row "Go Pro" action link; `go-pro` tab (icon `dashicons-superhero-alt`) appended
+after `cpiu_admin_tabs` with `render_go_pro_tab()` (7 cards for the shipped Pro 1.4.0 features, one
+product-page link with UTM placement tags); plain white header pill linking to that tab; CSS. Readme Pro
+list matched to Pro 1.4.0. 1.2.0 headers, changelog, upgrade notice. Rule files updated per D-005.
+
+**Evidence (Playground, WP 7.1.4 + WC 11.2.2, scratch copies, `--workers=1`):**
+| State | Tab | Header pill | Plugins row | Default tab |
+|---|---|---|---|---|
+| Free only | shown, last, 7 cards | shown | shown | Default Settings |
+| Pro 1.4.0 active, unlicensed | Freemius activation screen replaces the page | — | shown | — |
+| Pro forced licensed (`cpiu_pro_is_licensed`) | page still behind Freemius activation | — | hidden | — |
+| Callback tab via `cpiu_admin_tabs` (licensed-Pro contract) | hidden; `&tab=go-pro` falls back to default | hidden | hidden | Default Settings |
+| `cpiu_show_pro_upsell` → false | hidden | hidden | hidden | Default Settings |
+Dashboard shows nothing; debug.log has no plugin warnings. 1440 and 390 px screenshots: no horizontal scroll.
+
+**Not run:** Plugin Check. Its PHPCS step fatals inside Playground (`fopen(php://stdin)`); running the
+bundled ruleset with host PHP was blocked by the session's permission rules.
+

@@ -91,7 +91,95 @@ class CPIU_Admin_Interface
          *
          * @param array $tabs Map of slug => array( label, icon, callback ).
          */
-        return apply_filters('cpiu_admin_tabs', $tabs);
+        $tabs = apply_filters('cpiu_admin_tabs', $tabs);
+
+        // Informational "Go Pro" tab, always last and never the default tab.
+        // Hidden once a premium add-on has registered its own tabs (D-005).
+        if (cpiu_show_pro_upsell($tabs)) {
+            $tabs['go-pro'] = array(
+                'label' => __('Go Pro', 'nowdigiverse-product-image-upload'),
+                'icon' => 'dashicons-superhero-alt',
+                'callback' => array($this, 'render_go_pro_tab'),
+            );
+        }
+
+        return $tabs;
+    }
+
+    /**
+     * Render the informational "Go Pro" tab.
+     *
+     * Lists what the separate Pro add-on adds. Nothing here is locked or
+     * disabled; every free feature keeps working without it.
+     *
+     * @param array $context Shared admin data (unused).
+     */
+    public function render_go_pro_tab($context = array())
+    {
+        $features = array(
+            array(
+                'icon' => 'dashicons-groups',
+                'title' => __('Bulk Operations', 'nowdigiverse-product-image-upload'),
+                'text' => __('Apply upload settings to many products at once instead of one by one.', 'nowdigiverse-product-image-upload'),
+            ),
+            array(
+                'icon' => 'dashicons-money-alt',
+                'title' => __('Upload fees', 'nowdigiverse-product-image-upload'),
+                'text' => __('Charge a flat fee per item or a price per uploaded image, with a free-image allowance and a live estimate before Add to cart.', 'nowdigiverse-product-image-upload'),
+            ),
+            array(
+                'icon' => 'dashicons-yes-alt',
+                'title' => __('Optional uploads', 'nowdigiverse-product-image-upload'),
+                'text' => __('Let customers add a product to the cart without uploading, per product or as a site-wide default.', 'nowdigiverse-product-image-upload'),
+            ),
+            array(
+                'icon' => 'dashicons-shortcode',
+                'title' => __('Shortcode', 'nowdigiverse-product-image-upload'),
+                /* translators: %s: the shortcode tag. */
+                'text' => sprintf(__('Place the upload widget for any product on any page with %s.', 'nowdigiverse-product-image-upload'), '[cpiu_upload_widget]'),
+            ),
+            array(
+                'icon' => 'dashicons-layout',
+                'title' => __('Elementor widget', 'nowdigiverse-product-image-upload'),
+                'text' => __('Drop the upload interface into your Elementor templates.', 'nowdigiverse-product-image-upload'),
+            ),
+            array(
+                'icon' => 'dashicons-database-export',
+                'title' => __('Import / Export', 'nowdigiverse-product-image-upload'),
+                'text' => __('Back up and restore all plugin settings as a JSON file.', 'nowdigiverse-product-image-upload'),
+            ),
+            array(
+                'icon' => 'dashicons-shield',
+                'title' => __('Security Logs', 'nowdigiverse-product-image-upload'),
+                'text' => __('See every upload attempt and security event in one dashboard.', 'nowdigiverse-product-image-upload'),
+            ),
+        );
+        ?>
+        <div class="cpiu-section cpiu-pro">
+            <h2><?php esc_html_e('NDV Image Upload Pro', 'nowdigiverse-product-image-upload'); ?></h2>
+            <p><?php esc_html_e('A separate add-on that installs next to this plugin and works with the settings you already have. It adds:', 'nowdigiverse-product-image-upload'); ?></p>
+
+            <ul class="cpiu-pro__features">
+                <?php foreach ($features as $feature) : ?>
+                    <li class="cpiu-pro__feature">
+                        <span class="dashicons <?php echo esc_attr($feature['icon']); ?>" aria-hidden="true"></span>
+                        <div>
+                            <strong><?php echo esc_html($feature['title']); ?></strong>
+                            <span><?php echo esc_html($feature['text']); ?></span>
+                        </div>
+                    </li>
+                <?php endforeach; ?>
+            </ul>
+
+            <div class="cpiu-pro__actions">
+                <a class="button button-primary" href="<?php echo esc_url(cpiu_get_pro_url('pro-tab')); ?>" target="_blank" rel="noopener noreferrer">
+                    <?php esc_html_e('See Pro features and pricing', 'nowdigiverse-product-image-upload'); ?>
+                    <span class="screen-reader-text"><?php esc_html_e('(opens in a new tab)', 'nowdigiverse-product-image-upload'); ?></span>
+                </a>
+                <span class="cpiu-pro__note"><?php esc_html_e('Your settings, product configurations and uploaded files stay as they are.', 'nowdigiverse-product-image-upload'); ?></span>
+            </div>
+        </div>
+        <?php
     }
 
     /**
@@ -293,6 +381,11 @@ class CPIU_Admin_Interface
                     <p><?php esc_html_e('Let customers upload & crop files for your WooCommerce products.', 'nowdigiverse-product-image-upload'); ?></p>
                 </div>
                 <span class="cpiu-admin-header__badge">v<?php echo esc_html(CPIU_VERSION); ?></span>
+                <?php if (isset($tabs['go-pro'])) : ?>
+                    <a class="cpiu-admin-header__pro" href="<?php echo esc_url($this->get_tab_url('go-pro')); ?>">
+                        <?php esc_html_e('Go Pro', 'nowdigiverse-product-image-upload'); ?>
+                    </a>
+                <?php endif; ?>
             </div>
             <div class="wp-header-end"></div>
 

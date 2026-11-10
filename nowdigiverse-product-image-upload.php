@@ -3,7 +3,7 @@
  * Plugin Name:    NDV Product Image Upload for WooCommerce
  * Plugin URI:     https://nowdigiverse.com/products/
  * Description:    Let WooCommerce customers upload and crop images and PDFs for products before checkout, with per-product rules and secure file handling.
- * Version:        1.1.2
+ * Version:        1.2.0
  * Author:         Nowdigiverse
  * Author URI:     https://nowdigiverse.com/
  * License:        GPL v2 or later
@@ -27,7 +27,7 @@ if (!defined('WPINC')) {
 // =========================================================================
 define('CPIU_PLUGIN_PATH', plugin_dir_path(__FILE__));
 define('CPIU_PLUGIN_URL', plugin_dir_url(__FILE__));
-define('CPIU_VERSION', '1.1.2');
+define('CPIU_VERSION', '1.2.0');
 define('CPIU_OPTIONS_GROUP', 'cpiu_options_group');
 define('CPIU_OPTIONS_NAME', 'cpiu_settings');
 define('CPIU_UPLOAD_DIR_NAME', 'custom_product_images');
@@ -590,9 +590,91 @@ function cpiu_add_plugin_action_links($links)
         $settings_link = '<span style="color: #999; cursor: not-allowed;" title="' . esc_attr__('Activate WooCommerce plugin to configure settings', 'nowdigiverse-product-image-upload') . '">' . esc_html__('Settings', 'nowdigiverse-product-image-upload') . '</span>';
     }
     array_unshift($links, $settings_link);
+
+    if (class_exists('WooCommerce') && cpiu_show_pro_upsell()) {
+        $pro_link = '<a href="' . esc_url(cpiu_get_pro_url('plugins-row')) . '" target="_blank" rel="noopener noreferrer" style="font-weight:600;color:#c96a10;">'
+            . esc_html__('Go Pro', 'nowdigiverse-product-image-upload')
+            . '<span class="screen-reader-text"> ' . esc_html__('(opens in a new tab)', 'nowdigiverse-product-image-upload') . '</span></a>';
+        array_splice($links, 1, 0, array($pro_link));
+    }
+
     return $links;
 }
 add_filter('plugin_action_links_' . plugin_basename(__FILE__), 'cpiu_add_plugin_action_links');
+
+// =========================================================================
+// 13b. Pro add-on links (D-005)
+//      Informational only: shown on this plugin's own settings page and its
+//      row on the Plugins screen, never as an admin notice, never gating a
+//      feature. Hidden once a premium add-on has registered its tabs.
+// =========================================================================
+
+/**
+ * Product page for the Pro add-on, tagged with the placement that linked to it.
+ *
+ * @param string $placement Short slug naming the link's location.
+ * @return string
+ */
+function cpiu_get_pro_url($placement)
+{
+    return add_query_arg(
+        array(
+            'utm_source' => 'wp-admin',
+            'utm_medium' => 'free-plugin',
+            'utm_campaign' => 'go-pro',
+            'utm_content' => sanitize_key($placement),
+        ),
+        'https://www.nowdigiverse.com/products/ndv-image-upload/'
+    );
+}
+
+/**
+ * Whether a premium add-on has registered its own settings tabs.
+ *
+ * Premium tabs are the ones that bring a render callback through the
+ * `cpiu_admin_tabs` filter; this plugin's own core tabs never do.
+ *
+ * @param array|null $tabs Already-filtered tab map, or null to build it.
+ * @return bool
+ */
+function cpiu_premium_tabs_registered($tabs = null)
+{
+    if (null === $tabs) {
+        /** This filter is documented in includes/class-cpiu-admin-interface.php */
+        $tabs = apply_filters('cpiu_admin_tabs', array());
+    }
+
+    foreach ((array) $tabs as $slug => $tab) {
+        if ('go-pro' !== $slug && is_array($tab) && !empty($tab['callback'])) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+/**
+ * Whether to show the "Go Pro" links to the current user.
+ *
+ * @param array|null $tabs Already-filtered tab map, or null to build it.
+ * @return bool
+ */
+function cpiu_show_pro_upsell($tabs = null)
+{
+    if (!current_user_can('manage_options')) {
+        return false;
+    }
+
+    /**
+     * Filters whether the free plugin shows its "Go Pro" links.
+     *
+     * Defaults to true until a premium add-on registers its settings tabs.
+     *
+     * @since 1.2.0
+     * @param bool $show Whether to show the links.
+     */
+    return (bool) apply_filters('cpiu_show_pro_upsell', !cpiu_premium_tabs_registered($tabs));
+}
 
 // =========================================================================
 // 14. Secure File Serving Endpoint

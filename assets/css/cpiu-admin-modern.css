@@ -807,7 +807,95 @@ body.toplevel_page_custom-image-upload-addon #wpcontent {
     }
 }
 
+/* ---- "Go Pro" header link + tab (informational, D-005) ---- */
+.cpiu-admin-page .cpiu-admin-header__pro {
+    flex: 0 0 auto;
+    /* Same top edge rule as the version badge, centred on it (30px vs 26px). */
+    align-self: flex-start;
+    margin-top: -2px;
+    padding: 6px 14px;
+    border-radius: var(--cpiu-radius-pill);
+    background: #fff;
+    color: var(--cpiu-primary-700);
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 18px;
+    text-decoration: none;
+}
+
+.cpiu-admin-page .cpiu-admin-header__pro:hover {
+    background: var(--cpiu-primary-050);
+    color: var(--cpiu-primary-700);
+}
+
+.cpiu-admin-page .cpiu-admin-header__pro:focus {
+    outline: 2px solid #fff;
+    outline-offset: 2px;
+    box-shadow: none;
+    color: var(--cpiu-primary-700);
+}
+
+.cpiu-admin-page .cpiu-pro__features {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin: 0 0 22px;
+    padding: 0;
+    list-style: none;
+}
+
+.cpiu-admin-page .cpiu-pro__feature {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    margin: 0;
+    padding: 14px 16px;
+    border: 1px solid var(--cpiu-border);
+    border-radius: var(--cpiu-radius-sm);
+    background: var(--cpiu-surface);
+}
+
+.cpiu-admin-page .cpiu-pro__feature > .dashicons {
+    flex: 0 0 auto;
+    width: 32px;
+    height: 32px;
+    display: grid;
+    place-items: center;
+    border-radius: 8px;
+    background: var(--cpiu-primary-050);
+    color: var(--cpiu-primary);
+    font-size: 18px;
+}
+
+.cpiu-admin-page .cpiu-pro__feature strong {
+    display: block;
+    margin: 0 0 2px;
+    color: var(--cpiu-ink);
+    font-size: 14px;
+}
+
+.cpiu-admin-page .cpiu-pro__feature span:not(.dashicons) {
+    color: var(--cpiu-muted);
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.cpiu-admin-page .cpiu-pro__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px 16px;
+}
+
+.cpiu-admin-page .cpiu-pro__note {
+    color: var(--cpiu-muted);
+    font-size: 13px;
+}
+
 @media screen and (max-width: 782px) {
+    .cpiu-admin-page .cpiu-pro__features {
+        grid-template-columns: minmax(0, 1fr);
+    }
     .cpiu-admin-page .form-table th {
         width: auto;
         padding-bottom: 4px;

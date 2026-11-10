@@ -4,7 +4,7 @@ Tags: woocommerce, image upload, product customization, cropping, file upload
 Requires at least: 5.9
 Tested up to: 7.1
 Requires PHP: 7.2
-Stable tag: 1.1.2
+Stable tag: 1.2.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -41,13 +41,15 @@ Everything is configured per product, so each product can have its own required 
 
 A separate **Pro add-on** extends this free plugin with:
 
-* Bulk operations — apply settings to many products at once
-* Import / Export all settings as JSON
-* Security Logs dashboard — monitor upload attempts and events
-* Dedicated Elementor widget for the upload interface
-* Per-upload pricing and fees (charge or discount based on uploads)
+* Bulk Operations — apply upload settings to many products at once
+* Upload fees — charge a flat fee per item or a price per uploaded image, with a free-image allowance and a live estimate before Add to cart
+* Optional uploads — let customers add a product to the cart without uploading, per product or site-wide
+* Shortcode — place the upload widget for any product on any page with `[cpiu_upload_widget]`
+* Elementor widget — place the upload interface in Elementor templates
+* Import / Export — back up and restore all plugin settings as JSON
+* Security Logs — monitor upload attempts and security events
 
-The Pro add-on requires this free plugin and is available from the developer at https://nowdigiverse.com/. The free plugin is fully functional on its own.
+The Pro add-on requires this free plugin and is available from the developer at https://www.nowdigiverse.com/products/ndv-image-upload/. The free plugin is fully functional on its own: no feature here needs Pro, a licence key or an account.
 
 == Installation ==
 
@@ -100,6 +102,11 @@ You choose. On the "Uninstall Preferences" tab you can keep all data (default) o
 
 == Changelog ==
 
+= 1.2.0 =
+* Added: a "Go Pro" tab on the settings page that lists what the separate Pro add-on adds, a "Go Pro" link in the settings header and on the Plugins screen. They are informational only: no free feature is locked, nothing is shown outside this plugin's own screens, and the links disappear once Pro is active.
+* Added: `cpiu_show_pro_upsell` filter to hide those links.
+* Changed: the readme's Pro feature list now matches the current Pro add-on.
+
 = 1.1.2 =
 * Compatibility: tested with WooCommerce 11.2 and WordPress 7.1, including an in-place upgrade from WooCommerce 10.9 with 600 configured products. `WC tested up to` raised from 10.9, so WooCommerce no longer flags the plugin as untested. No code or data changes.
 
@@ -119,6 +126,9 @@ You choose. On the "Uninstall Preferences" tab you can keep all data (default) o
 * HPOS compatibility and uninstall data preferences.
 
 == Upgrade Notice ==
+
+= 1.2.0 =
+Adds an informational "Go Pro" tab and links on the plugin's own screens. No changes to uploads, settings or order data.
 
 = 1.1.2 =
 Compatibility release: tested with WooCommerce 11.2 and WordPress 7.1. No code or data changes.

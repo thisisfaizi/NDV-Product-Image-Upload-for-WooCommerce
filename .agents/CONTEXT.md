@@ -32,14 +32,29 @@ Now that the plugin is published, `CONTRACTS.md` is not internal documentation �
 live installs and with the Pro add-on. Changes to it are breaking changes with a cross-repo process
 (`AGENTS.md` §3.9).
 
-### D-003 — This repo does not know the Pro add-on exists. (2026-07-26)
-No `class_exists('CPIU_Pro')`, no upsell UI, no license-gated code paths, no bundled SDK, no phone-home.
+### D-003 — This repo does not know the Pro add-on exists. (2026-07-26, narrowed by D-005)
+No `class_exists('CPIU_Pro')`, no license-gated code paths, no bundled SDK, no phone-home. ("No upsell UI"
+was lifted by D-005 on 2026-11-10; the rest stands.)
 Required by the WordPress.org guidelines and by the free/paid separation.
 **When Pro needs something:** a **new hook is added here**, specced and released — never a special case.
 
 ### D-004 — `CPIU_UPLOAD_DIR_NAME` stays `custom_product_images`. (2026-07-26)
 It is a directory on disk in every live install, containing customers' uploaded files, referenced by URLs
 already stored in order-item meta and already sent in order emails. Frozen for the same reason as D-001.
+
+
+### D-005 — Informational "Go Pro" CTAs are allowed, on our own screens only. (2026-11-10, owner request)
+WordPress.org guidelines 5 and 11 allow upgrade prompts that are non-blocking and stay on the plugin's own
+screens; D-003's blanket "no upsell UI" was stricter than the directory requires. Allowed, and nothing else:
+a last-position `go-pro` tab (feature list + one link to the product page), a "Go Pro" link in the settings
+header, and a "Go Pro" action link on our Plugins-screen row. Rules that bind them:
+- **No admin notices for upsell**, no dashboard widgets, nothing on other plugins' or WooCommerce screens.
+- **Nothing locked or teased inside free forms**: no greyed tabs, disabled fields or "Pro" badges.
+- **No licence check, no SDK, no phone-home, no site data in links** (UTM tags naming the placement only).
+- **No prices in the plugin** (they change); copy lists only features the shipped Pro add-on has.
+- **Hidden for Pro users without naming Pro:** shown only while no callback-bearing tab other than `go-pro`
+  is registered via `cpiu_admin_tabs` (Pro registers its tabs only when licensed), and only to
+  `manage_options` users. `cpiu_show_pro_upsell` overrides it.
 
 ---
 
@@ -90,7 +105,7 @@ and the plugin header's `WC tested up to` whenever either of these happens:
 
 - **Sweeping `cpiu_` → `ndv_` to "finish the rebrand"** — data loss (D-001).
 - **Renaming the upload directory to match the new branding** — orphans every uploaded file (D-004).
-- **Adding an upsell notice / Pro feature teaser to the free plugin** — WP.org guideline risk and violates
-  the free/paid separation (D-003).
+- **Adding an upsell admin notice, or a locked/greyed Pro teaser inside free forms** — WP.org guideline risk
+  (guidelines 5 and 11). The informational CTAs allowed by D-005 are the only upsell surface.
 - **Bundling the WPBay SDK here so both editions share one updater** — would disqualify the plugin from the
   directory. Licensing lives in the Pro repo only.

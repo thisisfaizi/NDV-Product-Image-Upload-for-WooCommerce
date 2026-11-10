@@ -74,9 +74,10 @@ name here is a breaking change requiring a paired task in the Pro repo (`AGENTS.
 - **`CPIU_UPLOAD_DIR_NAME` (`custom_product_images`) is permanent** for the same reason — it's a directory
   on disk in every live install, referenced by URLs already stored in order-item meta and already sent in
   order emails (D-004).
-- **This repo must never reference the Pro add-on.** No `class_exists('CPIU_Pro')`, no upsell UI, no
-  license-gated behaviour. WordPress.org guidelines + the free/paid separation both require it (D-003). If
-  Pro needs new capability, the answer is a new hook added *here*, not a special case.
+- **This repo must never reference the Pro add-on's code.** No `class_exists('CPIU_Pro')`, no
+  license-gated behaviour (D-003). If Pro needs new capability, the answer is a new hook added *here*, not
+  a special case. The only upsell surface is D-005's informational "Go Pro" tab + header link + Plugins-row
+  link, hidden once premium tabs are registered. No upsell notices, no locked/teaser UI.
 - **The Pro add-on has drifted post-rebrand** (old menu slug, old dependency name) — that's the Pro repo's
   problem to fix, tracked there. Don't "helpfully" patch it from this repo.
 - **`cpiu_multi_product_configs` must stay non-autoload.** It grows with every configured product; the

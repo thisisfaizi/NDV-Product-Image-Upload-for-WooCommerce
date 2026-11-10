@@ -28,6 +28,7 @@ in the published zip — expected, not a discrepancy.
 | `cpiu_allowed_mime_types` | `$default_mime_types` | Extend the upload MIME allowlist | `class-cpiu-secure-upload.php:93` |
 | `cpiu_allowed_extensions` | `$default_extensions` | Extend the upload extension allowlist | `class-cpiu-secure-upload.php:94` |
 | `cpiu_client_ip` | `$ip` | Adjust client IP resolution (proxies/CDN) | `class-cpiu-ajax-handler.php:1031` |
+| `cpiu_show_pro_upsell` | `$show` (default: no callback-bearing tab other than `go-pro` is registered) | Hide the informational "Go Pro" tab, header link and Plugins-row link (D-005). Since 1.2.0 | `nowdigiverse-product-image-upload.php:676` |
 
 ⚠️ `cpiu_allowed_mime_types` and `cpiu_allowed_extensions` are **security-relevant**. Anything that widens
 them is an `@sec` review, not a feature.
@@ -70,6 +71,7 @@ them is an `@sec` review, not a feature.
 | Menu slug | `cpiu-settings` |
 | Screen id | `toplevel_page_cpiu-settings` |
 | Settings URL | `admin.php?page=cpiu-settings` |
+| Reserved tab slug | `go-pro` (free plugin's informational tab, last; premium tabs must not use it) |
 
 ## Script / style handles
 
