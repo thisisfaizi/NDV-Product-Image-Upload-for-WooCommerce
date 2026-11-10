@@ -2,9 +2,9 @@
 Contributors: nowdigiverse
 Tags: woocommerce, image upload, product customization, cropping, file upload
 Requires at least: 5.9
-Tested up to: 7.0
+Tested up to: 7.1
 Requires PHP: 7.2
-Stable tag: 1.1.1
+Stable tag: 1.1.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -100,6 +100,9 @@ You choose. On the "Uninstall Preferences" tab you can keep all data (default) o
 
 == Changelog ==
 
+= 1.1.2 =
+* Compatibility: tested with WooCommerce 11.2 and WordPress 7.1, including an in-place upgrade from WooCommerce 10.9 with 600 configured products. `WC tested up to` raised from 10.9, so WooCommerce no longer flags the plugin as untested. No code or data changes.
+
 = 1.1.1 =
 * Fixed: on the block cart and checkout, a product with no upload configuration could show another product's uploaded files when both were in the cart. Thumbnails now appear only under the product they were uploaded for. Display only: order data was never affected.
 * Improved: uploaded-file thumbnails now find their product when its name contains curly quotes, dashes or "&".
@@ -116,6 +119,9 @@ You choose. On the "Uninstall Preferences" tab you can keep all data (default) o
 * HPOS compatibility and uninstall data preferences.
 
 == Upgrade Notice ==
+
+= 1.1.2 =
+Compatibility release: tested with WooCommerce 11.2 and WordPress 7.1. No code or data changes.
 
 = 1.1.1 =
 Fixes uploaded-file thumbnails appearing under the wrong product on the block cart and checkout.

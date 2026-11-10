@@ -423,3 +423,39 @@ WooCommerce, WooCommerce Product Add-Ons) with a trademark line.
 **Not changed:** `readme.txt`, code, versions, hooks, options.
 
 **Evidence:** `git diff --stat` = README.md, LICENSE, `.agents/` only. Both shields badges resolve.
+## 2026-11-10 — T-013: "settings page 404 after WooCommerce update" (customer ticket) → 1.1.2 compat bump
+
+**Report:** WP 7.1.4, WC 11.2.2, Astra 4.14.2, plugin 1.1.1, ~600 products. `admin.php?page=cpiu-settings`
+"404s" after a WC update; deactivate/reactivate and delete/reinstall did not help.
+
+**Result: not reproduced, no code defect found.**
+- Registration chain: `plugins_loaded` → `class_exists('WooCommerce')` → `is_admin()` → `admin_menu` →
+  `add_menu_page(..., 'manage_options', 'cpiu-settings', ..., 58)`. Same slug in 1.0.0, 1.1.0, 1.1.1. Every
+  link (menu, action link, install notice, tab URLs) uses `admin.php?page=cpiu-settings`. No activation redirect.
+- WP.org 1.1.1 zip is identical to the repo (ignoring CRLF). Every WC API the plugin calls exists in 11.2.2.
+- WC 10.0–11.2.2 (changelog, dev notes, 11.2.2 source): nothing removes/redirects third-party top-level
+  pages. Marketing sits at 58 too; WP's collision avoider makes ours 58.xxxx (order only). WC still defines
+  `WooCommerce` when its main file loads. No auto-deactivation for missing feature declarations.
+- WP 7.1.4: `admin.php?page=` never sends 404. Unregistered page or missing capability → 403 "Sorry, you
+  are not allowed to access this page." `Requires Plugins` is enforced only at activation.
+- A real 404 therefore comes from outside WP's admin routing (wrong/old URL, security/hide-login plugin,
+  server rule) or is the 403 message described as a 404. Not theme-dependent (theme never loads in wp-admin).
+
+**Evidence (WP Playground CLI 3.1.61, PHP 8.3):**
+| Scenario | Result |
+|---|---|
+| Fresh WP 7.1.4 + WC 11.2.2 + Astra 4.14.2, admin | page + 5 tabs 200 |
+| WC 10.9 + 600 seeded configs → in-place overwrite to 11.2.2, `WP_DEBUG_LOG` | page + 5 tabs 200, log clean (1 WC textdomain notice) |
+| Same, as `shop_manager` | 403 "Sorry, you are not allowed" (by design, `manage_options`) |
+| Deactivate → delete (runs uninstall.php, no preference set) → reinstall 1.1.1 from WP.org | 200, all 600 configs intact |
+
+Note: with 600 configs each tab took ~3 s in Playground vs ~0.9 s for `wc-settings` (render_admin_page
+loads every configuration on every tab). Perf follow-up candidate, not this bug. Multi-worker Playground
+corrupted its SQLite DB under load; rerun with `--workers=1`.
+
+**Changed:** version 1.1.2 (header, `CPIU_VERSION`, `Stable tag`), `WC tested up to` 10.9 → 11.2,
+`Tested up to` 7.0 → 7.1, changelog + upgrade notice. No code or data changes.
+**Not run:** Plugin Check, real customer site.
+
+**Resolution (customer, 2026-11-10):** WPS Hide Login was intercepting the admin redirect and serving the
+404. Disabling it restored the NDV page. Not an NDV defect.
