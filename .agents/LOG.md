@@ -483,3 +483,5 @@ Dashboard shows nothing; debug.log has no plugin warnings. 1440 and 390 px scree
 **Not run:** Plugin Check. Its PHPCS step fatals inside Playground (`fopen(php://stdin)`); running the
 bundled ruleset with host PHP was blocked by the session's permission rules.
 
+**Released (2026-11-10):** WP.org SVN r3795019 (trunk + `tags/1.2.0`, owner ran `svn ci`). Git `8cc180c`. Live zip
+matches the repo (CRLF-insensitive diff clean).
