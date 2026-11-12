@@ -485,3 +485,50 @@ bundled ruleset with host PHP was blocked by the session's permission rules.
 
 **Released (2026-11-10):** WP.org SVN r3795019 (trunk + `tags/1.2.0`, owner ran `svn ci`). Git `8cc180c`. Live zip
 matches the repo (CRLF-insensitive diff clean).
+
+## 2026-11-13 — T-015: review request notice + contextual Pro hints (D-006) → 1.3.0
+
+**Changed:**
+- Main file §11b: `cpiu_review_update_option()` (add with autoload `no` when missing, else update),
+  `cpiu_review_record_first_seen()` on `current_screen` (settings page only, `manage_options`),
+  `cpiu_review_notice_is_due()` (cap → screen → status → snooze → 14-day age → only then
+  `CPIU_Data_Manager::get_configured_products()`), `cpiu_show_review_notice()`. §12: AJAX
+  `cpiu_review_notice` (nonce `cpiu_review_notice` → `manage_options` → `choice` whitelist, else 400).
+  `review_nonce` added to the `cpiu-admin-notices` localisation.
+- `assets/js/cpiu-admin-notices.js`: review buttons + core X (`.notice-dismiss`) = snooze.
+- `CPIU_Admin_Interface`: `$show_pro_hints` = `isset($tabs['go-pro'])`; `render_pro_hint()`; three hints
+  (Add Configuration after `cpiu_config_form_fields` add-context; Existing Configurations when ≥2 configs;
+  Uninstall Preferences export box). Not in the edit modal. CSS `.cpiu-pro-hint` (muted 13px text).
+- `uninstall.php`: the three `cpiu_review_*` options join the delete-branch list.
+- 1.3.0 header, `CPIU_VERSION`, `Stable tag`, changelog + upgrade notice. Rule files per D-006.
+- Hints link to `cpiu_get_pro_url('hint-…')` (product page + UTM): 1.2.0 has no trial URL; the product
+  page's main action is the 7-day trial. `.pot` not regenerated (not maintained since 1.0.0; WP.org builds
+  translations from code).
+
+**Evidence (Playground CLI 3.1.61, WP 7.1.4, WC latest, PHP 8.3, `--workers=1`, scratch copy + test mu-plugin;
+option rows read straight from `wp_options` incl. `autoload`):**
+| Check | Result |
+|---|---|
+| First settings visit | `cpiu_review_first_seen` added, autoload `off`; no notice |
+| 15 d old, 0 configs / 13 d old, 1 config / 15 d old, 1 config | no notice / no notice / notice |
+| Maybe later | hidden; `cpiu_review_snooze_until` = now + 30 d (autoload `off`); gone on reload |
+| X | same as Maybe later |
+| I already did | `cpiu_review_status` = `already`; gone on reload |
+| Leave a review | new tab → `https://wordpress.org/support/plugin/nowdigiverse-product-image-upload/reviews/#new-post` (`rel=noopener noreferrer`); status `reviewed`; gone on reload |
+| Plugins screen / Dashboard / Products list | notice / none / none |
+| Bad nonce / bad `choice` | "Security check failed." / HTTP 400, nothing written |
+| Hints, 2 configs | 3 hints, each linking `…/products/ndv-image-upload/?utm_…&utm_content=hint-*` |
+| 1 config | no Bulk Operations hint |
+| `cpiu_show_pro_upsell` → false | 0 hints, no Go Pro tab, no header pill |
+| callback tab via `cpiu_admin_tabs` | 0 hints, no Go Pro tab, no header pill |
+| §5.1 #1 Configure (UI form submit → reload) | config saved, row shows on Existing Configurations; no JS errors |
+| debug.log | only WooCommerce's own early-textdomain notice |
+| 390 px | page scrollWidth 408 with and without the notice: pre-existing (hidden Select2 `<select>` + admin-bar name), not from this change |
+Plugin Check: its PHPCS rulesets (`plugin-check.ruleset.xml`, `plugin-review.xml`, from the WP.org
+plugin-check zip) run with host PHP against the scratch copy: 0 errors, 0 warnings (canary file with
+`echo $_GET` was flagged, so the ruleset was live). I18n/escaping/nonce sniffs with
+`text_domain=nowdigiverse-product-image-upload`: clean. The in-WP Plugin Check UI was not run.
+`php -l` clean on host PHP 8.5; no PHP ≥7.3 syntax in the diff (grep). Not booted on PHP 7.2/7.4.
+
+**Not run:** §5.1 #2–9 (upload, PDF, rejection, cart→order, cleanup, reactivate, Pro installed): change
+touches only admin notices/settings markup.

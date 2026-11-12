@@ -41,7 +41,7 @@ a new module.
 ## Hook surface, options, meta keys
 
 Canonical list with file:line references lives in **`/.agents/CONTRACTS.md`** — read it before adding,
-removing, or renaming anything hookable. Summary: 8 filters, 5 actions, 8 options
+removing, or renaming anything hookable. Summary: 9 filters, 5 actions, 11 options
 (`cpiu_multi_product_configs` is **non-autoload** — it grows with every configured product), 3 order-item
 meta keys, 1 HMAC-token public endpoint, 1 daily cleanup cron.
 
@@ -77,7 +77,9 @@ name here is a breaking change requiring a paired task in the Pro repo (`AGENTS.
 - **This repo must never reference the Pro add-on's code.** No `class_exists('CPIU_Pro')`, no
   license-gated behaviour (D-003). If Pro needs new capability, the answer is a new hook added *here*, not
   a special case. The only upsell surface is D-005's informational "Go Pro" tab + header link + Plugins-row
-  link, hidden once premium tabs are registered. No upsell notices, no locked/teaser UI.
+  link and D-006's one-line contextual hints (`render_pro_hint()`), all hidden once premium tabs are
+  registered. No upsell notices, no locked/disabled/badged UI. The review request (D-006, main file §11b)
+  is the only non-functional notice besides install/data ones; its `cpiu_review_*` options are non-autoload.
 - **The Pro add-on has drifted post-rebrand** (old menu slug, old dependency name) — that's the Pro repo's
   problem to fix, tracked there. Don't "helpfully" patch it from this repo.
 - **`cpiu_multi_product_configs` must stay non-autoload.** It grows with every configured product; the

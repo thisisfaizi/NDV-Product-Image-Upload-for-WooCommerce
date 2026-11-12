@@ -3,7 +3,7 @@
  * Plugin Name:    NDV Product Image Upload for WooCommerce
  * Plugin URI:     https://nowdigiverse.com/products/
  * Description:    Let WooCommerce customers upload and crop images and PDFs for products before checkout, with per-product rules and secure file handling.
- * Version:        1.2.0
+ * Version:        1.3.0
  * Author:         Nowdigiverse
  * Author URI:     https://nowdigiverse.com/
  * License:        GPL v2 or later
@@ -27,7 +27,7 @@ if (!defined('WPINC')) {
 // =========================================================================
 define('CPIU_PLUGIN_PATH', plugin_dir_path(__FILE__));
 define('CPIU_PLUGIN_URL', plugin_dir_url(__FILE__));
-define('CPIU_VERSION', '1.2.0');
+define('CPIU_VERSION', '1.3.0');
 define('CPIU_OPTIONS_GROUP', 'cpiu_options_group');
 define('CPIU_OPTIONS_NAME', 'cpiu_settings');
 define('CPIU_UPLOAD_DIR_NAME', 'custom_product_images');
@@ -116,6 +116,7 @@ function cpiu_enqueue_admin_notices_script()
         'dismiss_nonce' => wp_create_nonce('cpiu_dismiss_notice'),
         'data_preference_nonce' => wp_create_nonce('cpiu_data_preference'),
         'dismiss_data_nonce' => wp_create_nonce('cpiu_dismiss_data_notice'),
+        'review_nonce' => wp_create_nonce('cpiu_review_notice'),
     ));
 }
 
@@ -535,6 +536,123 @@ function cpiu_show_data_management_notice()
 add_action('admin_notices', 'cpiu_show_data_management_notice');
 
 // =========================================================================
+// 11b. Review Request Notice (D-006)
+//      Asks for an honest WordPress.org review, once a shop has used the
+//      plugin for 14+ days AND configured at least one product. Shown only to
+//      manage_options users on this plugin's settings page and the Plugins
+//      screen. "First seen" is recorded on the first visit to the settings
+//      page, because updates never run the activation hook.
+// =========================================================================
+
+/**
+ * Write a review-notice option without autoloading it.
+ *
+ * update_option() on a missing key would add it with autoload on, so a
+ * missing key is added explicitly with autoload disabled (works on WP 5.9,
+ * unlike the 6.4+ autoload helper).
+ *
+ * @param string $name  Option name (cpiu_review_*).
+ * @param mixed  $value Value to store.
+ */
+function cpiu_review_update_option($name, $value)
+{
+    if (null === get_option($name, null)) {
+        add_option($name, $value, '', 'no');
+    } else {
+        update_option($name, $value);
+    }
+}
+
+/**
+ * Record when an admin first opened the settings page (on or after 1.3.0).
+ *
+ * @param WP_Screen $screen Current admin screen.
+ */
+function cpiu_review_record_first_seen($screen)
+{
+    if (!$screen || 'toplevel_page_cpiu-settings' !== $screen->id || !current_user_can('manage_options')) {
+        return;
+    }
+    if (null === get_option('cpiu_review_first_seen', null)) {
+        add_option('cpiu_review_first_seen', time(), '', 'no');
+    }
+}
+add_action('current_screen', 'cpiu_review_record_first_seen');
+
+/**
+ * Whether the review request should be shown on the current screen.
+ *
+ * Cheap checks run first; the per-product configuration blob is read only
+ * once every option-based condition has passed.
+ *
+ * @return bool
+ */
+function cpiu_review_notice_is_due()
+{
+    if (!current_user_can('manage_options')) {
+        return false;
+    }
+
+    $screen = function_exists('get_current_screen') ? get_current_screen() : null;
+    $screen_id = $screen ? $screen->id : '';
+    if ('toplevel_page_cpiu-settings' !== $screen_id && 'plugins' !== $screen_id) {
+        return false;
+    }
+
+    // 'reviewed' or 'already' = never ask again.
+    if ('' !== (string) get_option('cpiu_review_status', '')) {
+        return false;
+    }
+
+    if (absint(get_option('cpiu_review_snooze_until', 0)) > time()) {
+        return false;
+    }
+
+    $first_seen = absint(get_option('cpiu_review_first_seen', 0));
+    if (!$first_seen || (time() - $first_seen) < 14 * DAY_IN_SECONDS) {
+        return false;
+    }
+
+    // The shop must actually use the plugin: at least one product configured.
+    if (!class_exists('CPIU_Data_Manager')) {
+        return false;
+    }
+    $configured = CPIU_Data_Manager::instance()->get_configured_products();
+
+    return !empty($configured);
+}
+
+function cpiu_show_review_notice()
+{
+    if (!cpiu_review_notice_is_due()) {
+        return;
+    }
+    $review_url = 'https://wordpress.org/support/plugin/nowdigiverse-product-image-upload/reviews/#new-post';
+    ?>
+    <div class="notice notice-info is-dismissible" id="cpiu-review-notice">
+        <p>
+            <strong><?php esc_html_e('NDV Product Image Upload', 'nowdigiverse-product-image-upload'); ?></strong>
+        </p>
+        <p><?php esc_html_e('Thank you for using NDV Product Image Upload in your shop. If you have a minute, would you leave an honest review on WordPress.org? It helps other store owners decide whether the plugin fits them, and tells us what to improve.', 'nowdigiverse-product-image-upload'); ?></p>
+        <p>
+            <a href="<?php echo esc_url($review_url); ?>" class="button button-primary" target="_blank"
+                rel="noopener noreferrer" data-cpiu-review="reviewed">
+                <?php esc_html_e('Leave a review', 'nowdigiverse-product-image-upload'); ?>
+                <span class="screen-reader-text"><?php esc_html_e('(opens in a new tab)', 'nowdigiverse-product-image-upload'); ?></span>
+            </a>
+            <button type="button" class="button" data-cpiu-review="later">
+                <?php esc_html_e('Maybe later', 'nowdigiverse-product-image-upload'); ?>
+            </button>
+            <button type="button" class="button" data-cpiu-review="already">
+                <?php esc_html_e('I already did', 'nowdigiverse-product-image-upload'); ?>
+            </button>
+        </p>
+    </div>
+    <?php
+}
+add_action('admin_notices', 'cpiu_show_review_notice');
+
+// =========================================================================
 // 12. AJAX Handlers for Admin Notices
 // =========================================================================
 function cpiu_dismiss_installation_notice_ajax()
@@ -578,6 +696,34 @@ function cpiu_dismiss_data_notice_ajax()
     wp_send_json_success();
 }
 add_action('wp_ajax_cpiu_dismiss_data_notice', 'cpiu_dismiss_data_notice_ajax');
+
+/**
+ * Record the admin's answer to the review request (D-006).
+ *
+ * reviewed / already = never show again; later / dismiss = snooze 30 days.
+ */
+function cpiu_review_notice_ajax()
+{
+    if (!isset($_POST['nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nonce'])), 'cpiu_review_notice')) {
+        wp_die(esc_html__('Security check failed.', 'nowdigiverse-product-image-upload'));
+    }
+    if (!current_user_can('manage_options')) {
+        wp_die(esc_html__('Insufficient permissions.', 'nowdigiverse-product-image-upload'));
+    }
+
+    $choice = isset($_POST['choice']) ? sanitize_key(wp_unslash($_POST['choice'])) : '';
+
+    if ('reviewed' === $choice || 'already' === $choice) {
+        cpiu_review_update_option('cpiu_review_status', $choice);
+    } elseif ('later' === $choice || 'dismiss' === $choice) {
+        cpiu_review_update_option('cpiu_review_snooze_until', time() + 30 * DAY_IN_SECONDS);
+    } else {
+        wp_send_json_error(null, 400);
+    }
+
+    wp_send_json_success();
+}
+add_action('wp_ajax_cpiu_review_notice', 'cpiu_review_notice_ajax');
 
 // =========================================================================
 // 13. Plugin Action Links

@@ -892,6 +892,14 @@ body.toplevel_page_custom-image-upload-addon #wpcontent {
     font-size: 13px;
 }
 
+/* ---- Contextual one-line Pro hints (D-006): plain text + one link ---- */
+.cpiu-admin-page .cpiu-pro-hint {
+    margin: 12px 0 0;
+    color: var(--cpiu-muted);
+    font-size: 13px;
+    line-height: 1.5;
+}
+
 @media screen and (max-width: 782px) {
     .cpiu-admin-page .cpiu-pro__features {
         grid-template-columns: minmax(0, 1fr);

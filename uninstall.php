@@ -49,7 +49,10 @@ function cpiu_enhanced_uninstall()
         'cpiu_keep_data_on_uninstall',
         'cpiu_installation_date',
         'cpiu_show_installation_notice',
-        'cpiu_data_notice_dismissed'
+        'cpiu_data_notice_dismissed',
+        'cpiu_review_first_seen',
+        'cpiu_review_status',
+        'cpiu_review_snooze_until'
     );
 
     foreach ($options_to_delete as $option) {

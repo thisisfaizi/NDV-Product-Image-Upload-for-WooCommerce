@@ -22,6 +22,16 @@ class CPIU_Admin_Interface
     private $data_manager;
 
     /**
+     * Whether the contextual Pro hints render on this page load.
+     *
+     * Set in render_admin_page() from the same check that shows the "Go Pro"
+     * tab (D-005/D-006), so licensed Pro users never see a hint.
+     *
+     * @var bool
+     */
+    private $show_pro_hints = false;
+
+    /**
      * Constructor
      */
     public function __construct()
@@ -179,6 +189,30 @@ class CPIU_Admin_Interface
                 <span class="cpiu-pro__note"><?php esc_html_e('Your settings, product configurations and uploaded files stay as they are.', 'nowdigiverse-product-image-upload'); ?></span>
             </div>
         </div>
+        <?php
+    }
+
+    /**
+     * Render a one-line contextual hint about what the Pro add-on adds here.
+     *
+     * Plain text plus one link (D-006): nothing is disabled, badged or
+     * greyed out, and nothing renders once the "Go Pro" tab is hidden.
+     *
+     * @param string $placement Short slug naming the hint's location (UTM tag only).
+     * @param string $text      Translated sentence describing the Pro feature.
+     */
+    private function render_pro_hint($placement, $text)
+    {
+        if (!$this->show_pro_hints) {
+            return;
+        }
+        ?>
+        <p class="cpiu-pro-hint">
+            <?php echo esc_html($text); ?>
+            <a href="<?php echo esc_url(cpiu_get_pro_url($placement)); ?>" target="_blank" rel="noopener noreferrer">
+                <?php esc_html_e('Start a 7-day Pro trial', 'nowdigiverse-product-image-upload'); ?><span class="screen-reader-text"> <?php esc_html_e('(opens in a new tab)', 'nowdigiverse-product-image-upload'); ?></span>
+            </a>
+        </p>
         <?php
     }
 
@@ -360,6 +394,10 @@ class CPIU_Admin_Interface
         $allowed_types = array('jpg', 'jpeg', 'png', 'gif', 'webp', 'pdf');
         $current_tab = $this->get_current_tab_slug();
         $tabs = $this->get_registered_tabs();
+
+        // Contextual Pro hints follow the "Go Pro" tab exactly: same filters,
+        // same capability check, hidden once premium tabs are registered.
+        $this->show_pro_hints = isset($tabs['go-pro']);
 
         // Shared data passed to premium tab render callbacks (Pro add-on).
         $cpiu_context = array(
@@ -927,6 +965,11 @@ class CPIU_Admin_Interface
                              * @param array $args Context: form type and default settings.
                              */
                             do_action('cpiu_config_form_fields', array('context' => 'add', 'defaults' => $default_settings));
+
+                            $this->render_pro_hint(
+                                'hint-add-configuration',
+                                __('Pro adds upload fees (a flat fee per item or a price per uploaded image) and optional uploads for this product.', 'nowdigiverse-product-image-upload')
+                            );
                             ?>
                             <p class="submit">
                                 <button type="submit"
@@ -946,6 +989,14 @@ class CPIU_Admin_Interface
                         <div id="cpiu-configurations-table">
                             <?php $this->render_configurations_table($configurations); ?>
                         </div>
+                        <?php
+                        if (is_array($configurations) && count($configurations) >= 2) {
+                            $this->render_pro_hint(
+                                'hint-bulk-operations',
+                                __('Pro adds Bulk Operations: apply upload settings to many products at once instead of one by one.', 'nowdigiverse-product-image-upload')
+                            );
+                        }
+                        ?>
                     </div>
                 </div>
 
@@ -1044,6 +1095,12 @@ class CPIU_Admin_Interface
                                 <p class="cpiu-export-note">
                                     <?php esc_html_e('Note: Uploaded images are not included in the export. Only configuration settings are backed up.', 'nowdigiverse-product-image-upload'); ?>
                                 </p>
+                                <?php
+                                $this->render_pro_hint(
+                                    'hint-import-export',
+                                    __('Pro adds Import / Export: restore all plugin settings from a JSON backup file.', 'nowdigiverse-product-image-upload')
+                                );
+                                ?>
                             </div>
                         </div>
                     </div>

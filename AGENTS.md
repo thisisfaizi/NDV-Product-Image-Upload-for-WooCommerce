@@ -220,8 +220,10 @@ This plugin targets the WordPress.org directory. `@compliance` blocks the merge 
 - **No translations bundled** beyond the `.pot` — WP.org ships them.
 - **GPLv2-or-later** headers intact; every bundled third-party asset GPL-compatible.
 - **No admin nags outside our own screens.** Notices check `get_current_screen()` — see the installation
-  and data-management notices. A global nag is a rejection. Upsell stays within D-005: no upsell notices,
-  nothing locked or greyed out in free forms, no prices, hidden once Pro's tabs are registered.
+  and data-management notices. A global nag is a rejection. Upsell stays within D-005 + D-006: no upsell
+  notices, nothing locked or greyed out in free forms (one-line text hints + one link are the limit), no
+  prices, hidden once Pro's tabs are registered. The review request (D-006) is not an upsell and offers
+  nothing in exchange for a review.
 - **Escaping/sanitization clean under Plugin Check**, or a `phpcs:ignore` with a written justification.
 - **`Requires at least`, `Requires PHP`, `WC requires at least`, `WC tested up to`** headers stay truthful
   and in sync with `readme.txt`.
@@ -230,7 +232,8 @@ This plugin targets the WordPress.org directory. `@compliance` blocks the merge 
 
 - **This repo must not know the Pro add-on's code**, beyond the reserved-section comment in the main file.
   No `class_exists('CPIU_Pro')`, no feature flags gated on a license. The informational "Go Pro" CTAs of
-  `.agents/CONTEXT.md` D-005 are the only upsell surface; they detect Pro only through `cpiu_admin_tabs`.
+  `.agents/CONTEXT.md` D-005 and the contextual one-line hints of D-006 are the only upsell surface; they
+  detect Pro only through `cpiu_admin_tabs` (and the `cpiu_show_pro_upsell` override).
 - **Extension happens only through the documented hooks.** If Pro needs something new, the answer is a
   **new hook added here**, specced by `@spec`, recorded in `CONTRACTS.md`, and released — not a special
   case wired into base code.

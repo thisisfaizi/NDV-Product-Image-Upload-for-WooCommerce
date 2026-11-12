@@ -32,9 +32,9 @@ Now that the plugin is published, `CONTRACTS.md` is not internal documentation �
 live installs and with the Pro add-on. Changes to it are breaking changes with a cross-repo process
 (`AGENTS.md` §3.9).
 
-### D-003 — This repo does not know the Pro add-on exists. (2026-07-26, narrowed by D-005)
+### D-003 — This repo does not know the Pro add-on exists. (2026-07-26, narrowed by D-005 and D-006)
 No `class_exists('CPIU_Pro')`, no license-gated code paths, no bundled SDK, no phone-home. ("No upsell UI"
-was lifted by D-005 on 2026-11-10; the rest stands.)
+was lifted by D-005 on 2026-11-10 and narrowed further by D-006 on 2026-11-13; the rest stands.)
 Required by the WordPress.org guidelines and by the free/paid separation.
 **When Pro needs something:** a **new hook is added here**, specced and released — never a special case.
 
@@ -55,6 +55,29 @@ header, and a "Go Pro" action link on our Plugins-screen row. Rules that bind th
 - **Hidden for Pro users without naming Pro:** shown only while no callback-bearing tab other than `go-pro`
   is registered via `cpiu_admin_tabs` (Pro registers its tabs only when licensed), and only to
   `manage_options` users. `cpiu_show_pro_upsell` overrides it.
+
+### D-006 — Review request notice + contextual one-line Pro hints. (2026-11-13, owner request)
+Owner approved review notice + contextual Pro prompts on 2026-11-13 in a Claude Code session. This goes
+beyond D-005 (which allowed only the tab, header link and Plugins-row link) in two ways, and no further:
+- **Review request notice** (main file §11b). Not an upsell. Plain `notice notice-info is-dismissible`
+  markup with native buttons, no stars/emoji/gradients. Asks for an *honest* review; never asks for a
+  rating, never offers anything in exchange (WP.org forbids incentivised reviews). Shown only to
+  `manage_options` users, only on `toplevel_page_cpiu-settings` and `plugins`, only when ≥14 days have
+  passed since `cpiu_review_first_seen` **and** at least one product is configured
+  (`CPIU_Data_Manager::get_configured_products()`, read-only). First-seen is stamped on the first visit
+  to the settings page, not at activation: updates never run the activation hook. "Leave a review" and
+  "I already did" set `cpiu_review_status` (never again); "Maybe later" and the X set
+  `cpiu_review_snooze_until` (+30 days). All three options are non-autoload and deleted only in the
+  uninstall "delete" branch.
+- **Contextual Pro hints** (`CPIU_Admin_Interface::render_pro_hint()`). A hint is one sentence of plain
+  text plus one link (`cpiu_get_pro_url()` with a placement tag) — nothing disabled, greyed, badged or
+  blocking, no modals, no prices. Only at points where Pro adds the missing capability, naming only
+  shipped Pro features: Add Configuration (upload fees, optional uploads), Existing Configurations when
+  ≥2 configs exist (Bulk Operations), Uninstall Preferences export box (Import / Export). Shown exactly
+  when the `go-pro` tab is shown (same `cpiu_show_pro_upsell()` check), so licensed Pro users and the
+  `cpiu_show_pro_upsell` → false override never see one. Not in the edit modal.
+- The 1.2.0 code has no trial URL; hints link to the product page (whose main action is the 7-day Pro
+  trial) via `cpiu_get_pro_url()`. A direct trial/checkout URL would be a separate owner decision.
 
 ---
 
@@ -106,6 +129,7 @@ and the plugin header's `WC tested up to` whenever either of these happens:
 - **Sweeping `cpiu_` → `ndv_` to "finish the rebrand"** — data loss (D-001).
 - **Renaming the upload directory to match the new branding** — orphans every uploaded file (D-004).
 - **Adding an upsell admin notice, or a locked/greyed Pro teaser inside free forms** — WP.org guideline risk
-  (guidelines 5 and 11). The informational CTAs allowed by D-005 are the only upsell surface.
+  (guidelines 5 and 11). The informational CTAs allowed by D-005 and the one-line text hints of D-006 are
+  the only upsell surface.
 - **Bundling the WPBay SDK here so both editions share one updater** — would disqualify the plugin from the
   directory. Licensing lives in the Pro repo only.

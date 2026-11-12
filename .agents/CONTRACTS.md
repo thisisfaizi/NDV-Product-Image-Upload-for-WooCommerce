@@ -28,7 +28,7 @@ in the published zip — expected, not a discrepancy.
 | `cpiu_allowed_mime_types` | `$default_mime_types` | Extend the upload MIME allowlist | `class-cpiu-secure-upload.php:93` |
 | `cpiu_allowed_extensions` | `$default_extensions` | Extend the upload extension allowlist | `class-cpiu-secure-upload.php:94` |
 | `cpiu_client_ip` | `$ip` | Adjust client IP resolution (proxies/CDN) | `class-cpiu-ajax-handler.php:1031` |
-| `cpiu_show_pro_upsell` | `$show` (default: no callback-bearing tab other than `go-pro` is registered) | Hide the informational "Go Pro" tab, header link and Plugins-row link (D-005). Since 1.2.0 | `nowdigiverse-product-image-upload.php:676` |
+| `cpiu_show_pro_upsell` | `$show` (default: no callback-bearing tab other than `go-pro` is registered) | Hide the informational "Go Pro" tab, header link and Plugins-row link (D-005), and the contextual one-line hints (D-006, 1.3.0). Since 1.2.0 | `nowdigiverse-product-image-upload.php` §13b `cpiu_show_pro_upsell()` |
 
 ⚠️ `cpiu_allowed_mime_types` and `cpiu_allowed_extensions` are **security-relevant**. Anything that widens
 them is an `@sec` review, not a feature.
@@ -55,6 +55,9 @@ them is an `@sec` review, not a feature.
 | `cpiu_installation_date` | yes | Set on fresh install |
 | `cpiu_show_installation_notice` | yes | Cleared on deactivate |
 | `cpiu_data_notice_dismissed` | yes | |
+| `cpiu_review_first_seen` | **no** | Unix time of the first settings-page visit on ≥1.3.0 (review request clock, D-006). Since 1.3.0 |
+| `cpiu_review_status` | **no** | `reviewed` \| `already` = never show the review request again. Since 1.3.0 |
+| `cpiu_review_snooze_until` | **no** | Unix time; review request hidden until then ("Maybe later" / X = +30 days). Since 1.3.0 |
 
 ## Order item meta
 
@@ -86,7 +89,8 @@ them is an `@sec` review, not a feature.
 
 ## AJAX actions (core)
 
-`cpiu_dismiss_installation_notice` · `cpiu_set_data_preference` · `cpiu_dismiss_data_notice`
+`cpiu_dismiss_installation_notice` · `cpiu_set_data_preference` · `cpiu_dismiss_data_notice` ·
+`cpiu_review_notice` (nonce `cpiu_review_notice`, `manage_options`, `choice` ∈ reviewed/already/later/dismiss; since 1.3.0)
 (plus the handlers registered in `CPIU_Ajax_Handler`)
 
 ## Cron

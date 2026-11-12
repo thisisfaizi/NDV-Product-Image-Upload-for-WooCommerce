@@ -27,6 +27,45 @@
 			$(document).on('click.cpiu-notices', '[data-cpiu-action="dismiss-installation"]', this.dismissInstallationNotice);
 			$(document).on('click.cpiu-notices', '[data-cpiu-action="set-data-preference"]', this.setDataPreference);
 			$(document).on('click.cpiu-notices', '[data-cpiu-action="dismiss-data-notice"]', this.dismissDataNotice);
+			$(document).on('click.cpiu-notices', '#cpiu-review-notice [data-cpiu-review]', this.answerReviewNotice);
+			// The core "X" button (added by WordPress to .is-dismissible notices) = snooze.
+			$(document).on('click.cpiu-notices', '#cpiu-review-notice .notice-dismiss', this.snoozeReviewNotice);
+		},
+
+		/**
+		 * Send the admin's answer to the review request.
+		 */
+		sendReviewChoice: function(choice) {
+			return $.post(window.ajaxurl, {
+				action: 'cpiu_review_notice',
+				choice: choice,
+				nonce: window.cpiu_admin_notices.review_nonce
+			}).fail(function() {
+				console.error('Failed to save review notice choice');
+			});
+		},
+
+		/**
+		 * "Leave a review" (link opens in a new tab), "Maybe later", "I already did".
+		 */
+		answerReviewNotice: function(e) {
+			var $control = $(this);
+			var choice = $control.data('cpiu-review');
+
+			// Let the review link open normally; only stop buttons.
+			if (!$control.is('a')) {
+				e.preventDefault();
+			}
+
+			CPIU_AdminNotices.sendReviewChoice(choice);
+			$control.closest('#cpiu-review-notice').fadeOut();
+		},
+
+		/**
+		 * Dismiss (X) snoozes the review request like "Maybe later".
+		 */
+		snoozeReviewNotice: function() {
+			CPIU_AdminNotices.sendReviewChoice('dismiss');
 		},
 		
 		/**
