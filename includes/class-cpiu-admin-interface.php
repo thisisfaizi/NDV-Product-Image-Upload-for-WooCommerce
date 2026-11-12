@@ -1098,7 +1098,7 @@ class CPIU_Admin_Interface
                                 <?php
                                 $this->render_pro_hint(
                                     'hint-import-export',
-                                    __('Pro adds Import / Export: restore all plugin settings from a JSON backup file.', 'nowdigiverse-product-image-upload')
+                                    __('Pro adds Import / Export: back up and restore all plugin settings as a JSON file.', 'nowdigiverse-product-image-upload')
                                 );
                                 ?>
                             </div>

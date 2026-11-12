@@ -505,7 +505,7 @@ matches the repo (CRLF-insensitive diff clean).
   page's main action is the 7-day trial. `.pot` not regenerated (not maintained since 1.0.0; WP.org builds
   translations from code).
 
-**Evidence (Playground CLI 3.1.61, WP 7.1.4, WC latest, PHP 8.3, `--workers=1`, scratch copy + test mu-plugin;
+**Evidence (Playground CLI 3.1.61, WP 7.1.4, WC 11.3.0, PHP 8.5.10 as reported by the runtime despite `--php=8.3`, `--workers=1`, scratch copy + test mu-plugin;
 option rows read straight from `wp_options` incl. `autoload`):**
 | Check | Result |
 |---|---|
@@ -523,7 +523,7 @@ option rows read straight from `wp_options` incl. `autoload`):**
 | callback tab via `cpiu_admin_tabs` | 0 hints, no Go Pro tab, no header pill |
 | §5.1 #1 Configure (UI form submit → reload) | config saved, row shows on Existing Configurations; no JS errors |
 | debug.log | only WooCommerce's own early-textdomain notice |
-| 390 px | page scrollWidth 408 with and without the notice: pre-existing (hidden Select2 `<select>` + admin-bar name), not from this change |
+| 390 px | page scrollWidth 408; the overflowing elements are the hidden Select2 `<select>` (`#product_search`) and the admin-bar `display-name`, both pre-existing, not the notice or hints |
 Plugin Check: its PHPCS rulesets (`plugin-check.ruleset.xml`, `plugin-review.xml`, from the WP.org
 plugin-check zip) run with host PHP against the scratch copy: 0 errors, 0 warnings (canary file with
 `echo $_GET` was flagged, so the ruleset was live). I18n/escaping/nonce sniffs with
@@ -534,3 +534,12 @@ plugin-check zip) run with host PHP against the scratch copy: 0 errors, 0 warnin
 touches only admin notices/settings markup.
 
 **Committed (2026-11-13):** git `1f19d16` on `main`. Not pushed, not tagged; WP.org SVN release is the owner's step.
+
+**Follow-up (2026-11-13):** the Import / Export hint first said "restore all plugin settings from a JSON
+backup file", right under the free "Export Settings Backup" box. Read-only check of the shipped Pro
+(`class-cpiu-pro-import-export.php` `ajax_import()`): it reads the keys `multi_product_configs`,
+`global_settings`, `default_settings`, `legacy_settings`, while the free export writes `cpiu_settings`,
+`cpiu_default_settings`, `cpiu_global_settings`, `cpiu_multi_product_configs`. So Pro would reject the free
+backup ("no recognisable settings"). Hint reworded to the Go Pro card text ("back up and restore all plugin
+settings as a JSON file") so it no longer implies this file can be restored. The format mismatch is a
+Pro-repo follow-up (accept the free export's keys there), not fixed here (§3.9).
