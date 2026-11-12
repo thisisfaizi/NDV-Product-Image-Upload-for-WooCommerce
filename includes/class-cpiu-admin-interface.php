@@ -210,7 +210,7 @@ class CPIU_Admin_Interface
         <p class="cpiu-pro-hint">
             <?php echo esc_html($text); ?>
             <a href="<?php echo esc_url(cpiu_get_pro_url($placement)); ?>" target="_blank" rel="noopener noreferrer">
-                <?php esc_html_e('Start a 7-day Pro trial', 'nowdigiverse-product-image-upload'); ?><span class="screen-reader-text"> <?php esc_html_e('(opens in a new tab)', 'nowdigiverse-product-image-upload'); ?></span>
+                <?php esc_html_e('See Pro and its 7-day trial', 'nowdigiverse-product-image-upload'); ?><span class="screen-reader-text"> <?php esc_html_e('(opens in a new tab)', 'nowdigiverse-product-image-upload'); ?></span>
             </a>
         </p>
         <?php

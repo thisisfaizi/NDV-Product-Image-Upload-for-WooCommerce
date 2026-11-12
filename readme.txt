@@ -104,7 +104,7 @@ You choose. On the "Uninstall Preferences" tab you can keep all data (default) o
 
 = 1.3.0 =
 * Added: a short request for an honest WordPress.org review. It appears only to administrators, only on this plugin's settings page and the Plugins screen, and only after the plugin has been in use for at least 14 days with at least one product configured. "Maybe later" hides it for 30 days; "Leave a review" or "I already did" hides it for good.
-* Added: one-line notes on the Add Configuration, Existing Configurations and Uninstall Preferences tabs that say which related features the Pro add-on adds, with a link to its 7-day trial. Nothing in the free plugin is locked, and the notes disappear once Pro is active or when the `cpiu_show_pro_upsell` filter returns false.
+* Added: one-line notes on the Add Configuration, Existing Configurations and Uninstall Preferences tabs that say which related features the Pro add-on adds, with a link to the Pro page (a 7-day trial is available). Nothing in the free plugin is locked, and the notes disappear once Pro is active or when the `cpiu_show_pro_upsell` filter returns false.
 
 = 1.2.0 =
 * Added: a "Go Pro" tab on the settings page that lists what the separate Pro add-on adds, a "Go Pro" link in the settings header and on the Plugins screen. They are informational only: no free feature is locked, nothing is shown outside this plugin's own screens, and the links disappear once Pro is active.
