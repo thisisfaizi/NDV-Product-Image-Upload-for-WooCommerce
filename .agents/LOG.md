@@ -532,3 +532,5 @@ plugin-check zip) run with host PHP against the scratch copy: 0 errors, 0 warnin
 
 **Not run:** §5.1 #2–9 (upload, PDF, rejection, cart→order, cleanup, reactivate, Pro installed): change
 touches only admin notices/settings markup.
+
+**Committed (2026-11-13):** git `1f19d16` on `main`. Not pushed, not tagged; WP.org SVN release is the owner's step.
