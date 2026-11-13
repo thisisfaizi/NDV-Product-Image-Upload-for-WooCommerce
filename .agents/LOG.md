@@ -543,3 +543,5 @@ backup file", right under the free "Export Settings Backup" box. Read-only check
 backup ("no recognisable settings"). Hint reworded to the Go Pro card text ("back up and restore all plugin
 settings as a JSON file") so it no longer implies this file can be restored. The format mismatch is a
 Pro-repo follow-up (accept the free export's keys there), not fixed here (§3.9).
+
+**Released (2026-11-13):** WP.org SVN r3799765 (trunk + `tags/1.3.0`, owner ran `svn ci`). Git `949d940` (adds the hint label fix "See Pro and its 7-day trial" on top of `6c51bd4`). `cpiu-admin-notices.js` kept CRLF in SVN. Live zip matches the repo (CRLF-insensitive diff clean).
