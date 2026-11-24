@@ -105,6 +105,8 @@ You choose. On the "Uninstall Preferences" tab you can keep all data (default) o
 = 1.3.1 =
 * Fixed: the Done button in the upload window had no background colour or padding, so it showed as plain text. It now uses the button colour set for the product.
 * Fixed: messages for products that need a single file now say "1 file" instead of "1 files".
+* Fixed: cropped images were saved at their on-screen size (often under 500 px wide) instead of the photo's own resolution. Crops now keep the original pixels (up to 4096 px per side), so print products get sharp files and resolution checks no longer reject cropped images. If a crop would exceed the product's file-size limit, it is scaled down just enough to fit.
+* Fixed: the order screen no longer shows the internal `_cpiu_original_filenames` field; file names still show under each uploaded file.
 
 = 1.3.0 =
 * Added: a short request for an honest WordPress.org review. It appears only to administrators, only on this plugin's settings page and the Plugins screen, and only after the plugin has been in use for at least 14 days with at least one product configured. "Maybe later" hides it for 30 days; "Leave a review" or "I already did" hides it for good.
@@ -136,7 +138,7 @@ You choose. On the "Uninstall Preferences" tab you can keep all data (default) o
 == Upgrade Notice ==
 
 = 1.3.1 =
-Fixes the unstyled Done button in the upload window and "1 files" wording. No changes to uploads, settings or order data.
+Cropped images now keep their full resolution instead of the on-screen size, and the upload window's Done button is styled again. No changes to settings or stored order data.
 
 = 1.3.0 =
 Adds an optional review request and short Pro notes on the plugin's own settings tabs. No changes to uploads, settings or order data.

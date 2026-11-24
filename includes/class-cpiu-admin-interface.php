@@ -1563,6 +1563,9 @@ class CPIU_Admin_Interface
     {
         $hidden_meta[] = '_cpiu_uploaded_images';
         $hidden_meta[] = 'cpiu_uploaded_images';
+        // Internal: the original names already show under each file card.
+        $hidden_meta[] = '_cpiu_original_filenames';
+        $hidden_meta[] = '_cpiu_images_cleaned';
         $hidden_meta[] = esc_html__('Uploaded files', 'nowdigiverse-product-image-upload');
         return $hidden_meta;
     }

@@ -18,6 +18,9 @@
     // so what the user sees is exactly what is produced. viewBox is 480 x 438.82.
     var HEART_PATH = 'M438.82 41.18c-54.9-54.9-143.92-54.9-198.82 0-54.9-54.9-143.92-54.9-198.82 0-54.9 54.9-54.9 143.92 0 198.82L240 438.82 438.82 240c54.9-54.9 54.9-143.92 0-198.82Z';
     var HEART_ASPECT = 480 / 438.82;
+    // Export limits: keep canvases inside what mobile browsers can allocate.
+    var MAX_EXPORT_SIDE = 4096;
+    var MAX_EXPORT_PIXELS = 16000000;
 
     // Inline SVG icons (currentColor) for the toolbar — no external assets.
     var ICONS = {
@@ -389,21 +392,32 @@
     }
 
     /** Produce the final canvas honouring the current shape, then resolve. */
-    function commit() {
-        if (!session || !dom.selection) {
-            return;
+    /**
+     * Output size for the current selection in source-image pixels.
+     * Cropper.js v2 renders <cropper-image> at its natural size and scales it
+     * with a transform, so source px per screen px = 1 / scale. Returns null
+     * when the size can't be read (falls back to the on-screen size).
+     */
+    function exportSize() {
+        if (!dom.selection || !dom.image || typeof dom.image.$getTransform !== 'function') {
+            return null;
         }
-
-        // If the user restored and hasn't re-edited, save the untouched original.
-        if (session.restored) {
-            resolveOriginal();
-            return;
+        var m = dom.image.$getTransform();
+        var scale = Math.sqrt(m[0] * m[0] + m[1] * m[1]);
+        var w = dom.selection.width || dom.selection.offsetWidth;
+        var h = dom.selection.height || dom.selection.offsetHeight;
+        if (!scale || !isFinite(scale) || !w || !h) {
+            return null;
         }
+        var ow = w / scale;
+        var oh = h / scale;
+        var cap = Math.min(1, MAX_EXPORT_SIDE / Math.max(ow, oh), Math.sqrt(MAX_EXPORT_PIXELS / (ow * oh)));
+        return { width: Math.max(1, Math.round(ow * cap)), height: Math.max(1, Math.round(oh * cap)) };
+    }
 
-        var shape = session.shape;
-        var transparent = (shape === 'circle' || shape === 'heart');
-
-        dom.selection.$toCanvas({
+    /** Draw the selection to a canvas (at `size` if given) and apply the shape mask. */
+    function renderCrop(size, shape, transparent) {
+        var opts = {
             imageSmoothingEnabled: true,
             imageSmoothingQuality: 'high',
             beforeDraw: function (ctx, cvs) {
@@ -413,7 +427,12 @@
                     ctx.fillRect(0, 0, cvs.width, cvs.height);
                 }
             }
-        }).then(function (canvas) {
+        };
+        if (size) {
+            opts.width = size.width;
+            opts.height = size.height;
+        }
+        return dom.selection.$toCanvas(opts).then(function (canvas) {
             if (!canvas) {
                 throw new Error('empty canvas');
             }
@@ -441,9 +460,44 @@
                 ctx.drawImage(canvas, 0, 0);
                 canvas = masked;
             }
+            return canvas;
+        });
+    }
 
-            var mime = transparent ? 'image/png' : 'image/jpeg';
-            var dataUrl = canvas.toDataURL(mime, 0.9);
+    function commit() {
+        if (!session || !dom.selection) {
+            return;
+        }
+
+        // If the user restored and hasn't re-edited, save the untouched original.
+        if (session.restored) {
+            resolveOriginal();
+            return;
+        }
+
+        var shape = session.shape;
+        var transparent = (shape === 'circle' || shape === 'heart');
+        var mime = transparent ? 'image/png' : 'image/jpeg';
+        var maxBytes = session.maxBytes;
+
+        // Export at the photo's own resolution, not the on-screen size. If the
+        // result would break the product's file-size limit, step the size down.
+        function attempt(size, triesLeft) {
+            return renderCrop(size, shape, transparent).then(function (canvas) {
+                var dataUrl = canvas.toDataURL(mime, 0.9);
+                var bytes = Math.floor((dataUrl.length - dataUrl.indexOf(',') - 1) * 3 / 4);
+                if (maxBytes && bytes > maxBytes && triesLeft > 0 && canvas.width > 400) {
+                    var f = Math.sqrt(maxBytes / bytes) * 0.9;
+                    return attempt({
+                        width: Math.max(1, Math.round(canvas.width * f)),
+                        height: Math.max(1, Math.round(canvas.height * f))
+                    }, triesLeft - 1);
+                }
+                return dataUrl;
+            });
+        }
+
+        attempt(exportSize(), 4).then(function (dataUrl) {
             finish({ dataUrl: dataUrl, mime: mime, shape: shape });
         }).catch(function (err) {
             if (window.console && console.error) {
@@ -501,7 +555,8 @@
                 shape: 'none',
                 flipX: 1,
                 flipY: 1,
-                restored: false
+                restored: false,
+                maxBytes: options.maxBytes > 0 ? options.maxBytes : 0
             };
 
             // Labels.

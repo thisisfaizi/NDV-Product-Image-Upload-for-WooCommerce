@@ -574,3 +574,33 @@ no Pro change needed.
 
 **Not run:** full §5.1 regression, Plugin Check, a classic theme (Storefront/Astra). The change is one CSS
 rule + three strings.
+
+## 2026-11-24 — T-017: crops exported at screen size; raw order meta row → also in 1.3.1 (branch)
+
+**Found in the same Playground session.** Product config: 1 file, min 800x600, heart crop. Source photo
+1800x1350 JPG. After cropping, the add-to-cart upload failed with `{"success":false,"data":{"message":"Image
+width (368px) is below minimum required width (800px)."}}`. Cause: `cpiu-cropper.js` `commit()` called
+Cropper.js v2.1.1 `$toCanvas()` without `width`/`height`, which renders at the selection's `offsetWidth`
+(CSS pixels on screen). So every crop since the v2 cropper was downscaled to screen size: blurry prints for
+photo products, and an automatic rejection whenever resolution validation is on.
+
+**Changed:** `assets/js/cpiu-cropper.js`: `exportSize()` (selection size / `cropper-image` transform scale =
+source pixels; caps 4096 px side, 16 MP for mobile canvas limits) and `renderCrop()` (the old draw + circle /
+heart mask, unchanged); `commit()` re-renders smaller if the encoded result exceeds `maxBytes` (up to 4
+tries, factor `sqrt(max/bytes)*0.9`). `assets/js/cpiu-frontend-multi-product.js` passes
+`maxBytes: maxFileSize` to `CPIUCropper.open()`. `includes/class-cpiu-admin-interface.php`
+`hide_custom_order_meta()` also hides `_cpiu_original_filenames` and `_cpiu_images_cleaned` (display only; the
+meta is still stored and read as before).
+
+**Evidence (Playground, guest, block cart + block checkout, Cash on delivery):**
+| Check | Before (1.3.0 JS) | After |
+|---|---|---|
+| Heart crop of 1800x1350 photo, min 800x600 | upload rejected, 368 px wide | added to cart |
+| Stored file (order #14) | n/a | `prod-11-…-0.png` 1273x1163 PNG, 243,218 bytes |
+| Admin order item meta rows | `_cpiu_original_filenames: sunset-photo.png` visible | none; card shows `sunset-photo.png` + Download file |
+| Console errors | — | none from the plugin (one 404 for a theme asset) |
+
+**Not run:** size-limit step-down path with a real >5 MB crop, rotate/flip + crop, square/circle export
+sizes, iOS Safari, full §5.1 regression, Plugin Check. Pro 1.4.1's shortcode enqueues this plugin's
+`cpiu-cropper.js` and `cpiu-frontend-multi-product.js` (`class-cpiu-pro-shortcode.php:209-212`), so it gets both fixes
+with no Pro change.

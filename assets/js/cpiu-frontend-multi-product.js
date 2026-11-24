@@ -557,6 +557,7 @@ document.addEventListener('DOMContentLoaded', function () {
             enableShapes: activeCropConfig.enableShapes,
             ratioSetting: activeCropConfig.ratio,
             accentColor: cpiu_params.progress_bar_color,
+            maxBytes: maxFileSize,
             i18n: cpiu_params.cropper_i18n
         });
 
