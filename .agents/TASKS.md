@@ -17,6 +17,12 @@ Update the row **at every transition**, not just at the end (`AGENTS.md` §8.1).
 
 | ID | Title | Owner | Status | Blockers | Acceptance criteria |
 |---|---|---|---|---|---|
+## In review
+
+| ID | Title | Owner | Status | Branch | Acceptance criteria |
+|---|---|---|---|---|---|
+| T-016 | Upload modal "Done" button unstyled (transparent, no padding) in every theme since 1.0.0; "1 files" wording | `@fe` | `review` | 2026-11-24, branch `fix/1.3.1-done-button` (not pushed; awaiting owner approval + `svn ci`) | `#cpiu-upload-modal .cpiu-done-btn` gets the product's button colour, white text, 12px 24px padding (the modal's `!important` form reset at `cpiu-frontend-styles.css` "Prevent theme form styling conflicts" no longer wins). Close × and thumbnail × unchanged. Single-file products read "1 file" (`_n()` on 3 strings). Version 1.3.1 in header, `CPIU_VERSION`, `Stable tag`; changelog + upgrade notice. Verified in Playground (LOG) |
+
 ## Blocked
 
 | ID | Title | Owner | Status | Blockers | Acceptance criteria |

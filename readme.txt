@@ -4,7 +4,7 @@ Tags: woocommerce, image upload, product customization, cropping, file upload
 Requires at least: 5.9
 Tested up to: 7.1
 Requires PHP: 7.2
-Stable tag: 1.3.0
+Stable tag: 1.3.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -102,6 +102,10 @@ You choose. On the "Uninstall Preferences" tab you can keep all data (default) o
 
 == Changelog ==
 
+= 1.3.1 =
+* Fixed: the Done button in the upload window had no background colour or padding, so it showed as plain text. It now uses the button colour set for the product.
+* Fixed: messages for products that need a single file now say "1 file" instead of "1 files".
+
 = 1.3.0 =
 * Added: a short request for an honest WordPress.org review. It appears only to administrators, only on this plugin's settings page and the Plugins screen, and only after the plugin has been in use for at least 14 days with at least one product configured. "Maybe later" hides it for 30 days; "Leave a review" or "I already did" hides it for good.
 * Added: one-line notes on the Add Configuration, Existing Configurations and Uninstall Preferences tabs that say which related features the Pro add-on adds, with a link to the Pro page (a 7-day trial is available). Nothing in the free plugin is locked, and the notes disappear once Pro is active or when the `cpiu_show_pro_upsell` filter returns false.
@@ -130,6 +134,9 @@ You choose. On the "Uninstall Preferences" tab you can keep all data (default) o
 * HPOS compatibility and uninstall data preferences.
 
 == Upgrade Notice ==
+
+= 1.3.1 =
+Fixes the unstyled Done button in the upload window and "1 files" wording. No changes to uploads, settings or order data.
 
 = 1.3.0 =
 Adds an optional review request and short Pro notes on the plugin's own settings tabs. No changes to uploads, settings or order data.

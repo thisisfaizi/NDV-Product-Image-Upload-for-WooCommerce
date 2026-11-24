@@ -550,7 +550,7 @@ class CPIU_Frontend_Manager
                         <?php
                         printf(
                             /* translators: %1$d: Number of images, %2$s: Max file size, %3$s: Allowed formats */
-                            esc_html__('Please upload exactly %1$d files. Maximum file size: %2$s. Allowed formats: %3$s.', 'nowdigiverse-product-image-upload'),
+                            esc_html(_n('Please upload exactly %1$d file. Maximum file size: %2$s. Allowed formats: %3$s.', 'Please upload exactly %1$d files. Maximum file size: %2$s. Allowed formats: %3$s.', absint($image_count), 'nowdigiverse-product-image-upload')),
                             esc_html($image_count),
                             esc_html(size_format($max_file_size)),
                             esc_html(implode(', ', array_map('strtoupper', $allowed_types)))
@@ -791,12 +791,12 @@ class CPIU_Frontend_Manager
             'max_height' => $config['max_height'],
             'error_less_images' => sprintf(
                 /* translators: %1$d: Number of images */
-                esc_html__('Please upload exactly %1$d files to proceed.', 'nowdigiverse-product-image-upload'),
+                esc_html(_n('Please upload exactly %1$d file to proceed.', 'Please upload exactly %1$d files to proceed.', absint($config['image_count']), 'nowdigiverse-product-image-upload')),
                 $config['image_count']
             ),
             'error_more_images' => sprintf(
                 /* translators: %1$d: Number of images */
-                esc_html__('You can only upload %1$d files. Please remove the extra files.', 'nowdigiverse-product-image-upload'),
+                esc_html(_n('You can only upload %1$d file. Please remove the extra files.', 'You can only upload %1$d files. Please remove the extra files.', absint($config['image_count']), 'nowdigiverse-product-image-upload')),
                 $config['image_count']
             ),
             'error_file_size' => sprintf(

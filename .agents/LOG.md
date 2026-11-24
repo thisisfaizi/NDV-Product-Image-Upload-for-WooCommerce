@@ -545,3 +545,32 @@ settings as a JSON file") so it no longer implies this file can be restored. The
 Pro-repo follow-up (accept the free export's keys there), not fixed here (§3.9).
 
 **Released (2026-11-13):** WP.org SVN r3799765 (trunk + `tags/1.3.0`, owner ran `svn ci`). Git `949d940` (adds the hint label fix "See Pro and its 7-day trial" on top of `6c51bd4`). `cpiu-admin-notices.js` kept CRLF in SVN. Live zip matches the repo (CRLF-insensitive diff clean).
+
+## 2026-11-24 — T-016: upload modal Done button unstyled → 1.3.1 (branch, not released)
+
+**Found while** taking documentation screenshots in Playground (WP latest, WC latest, PHP 8.3, Twenty
+Twenty-Five, `--workers=1`, scratch copy). The modal's form reset (`#cpiu-upload-modal button { background:
+transparent !important; padding: 0 !important; ... }`, present since 1.0.0 `3bfb7c4` and in SVN
+`tags/1.3.0`) also matched `#cpiu-done-button`. Computed style before: background `rgba(0,0,0,0)`,
+padding `0px`, colour `#111`, so "Done" rendered as plain bold text. The inline `background-color` set by
+the frontend JS loses to the reset's `!important`. The crop modal (`.cpiu-crx-modal`) is not inside
+`#cpiu-upload-modal` and was unaffected (Save `rgb(31,111,235)`, 9px 18px).
+
+**Changed:** `assets/css/cpiu-frontend-styles.css` new `#cpiu-upload-modal .cpiu-done-btn` rule after the
+reset (ID + class outranks the reset; uses `--cpiu-bg-color`, which the JS already sets), hover/focus-visible
+state. `includes/class-cpiu-frontend-manager.php`: `_n()` for the 3 "exactly/only %d files" strings
+(wrapped in `esc_html()`). Version 1.3.1 (header, `CPIU_VERSION`, `Stable tag`), changelog + upgrade notice.
+Pro 1.4.1 shortcode reuses the same `#cpiu-done-button` markup and the free stylesheet, so it gets the fix too;
+no Pro change needed.
+
+**Evidence (Playground, product with config `button_color #1F6FEB`, `image_count 1`):**
+| Check | 1280 px | 390 px |
+|---|---|---|
+| Done background / colour / padding | `rgb(31,111,235)` / white / `12px 24px` | same |
+| Close × | transparent, 0px, `#999` (unchanged) | same |
+| Hint text | "Please upload exactly 1 file." | same |
+| Stylesheet version | `ver=1.3.1` | same |
+| Console errors | none | none |
+
+**Not run:** full §5.1 regression, Plugin Check, a classic theme (Storefront/Astra). The change is one CSS
+rule + three strings.

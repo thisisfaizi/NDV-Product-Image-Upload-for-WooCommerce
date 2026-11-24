@@ -1626,6 +1626,29 @@ body.cpiu-modal-open {
     appearance: none !important;
 }
 
+/* The reset above also hit the modal's Done button (transparent, no padding).
+   Restore it; the ID selector outranks the reset and the inline colour. */
+#cpiu-upload-modal .cpiu-done-btn {
+    background: var(--cpiu-bg-color, #0073aa) !important;
+    color: #fff !important;
+    padding: 12px 24px !important;
+    border-radius: 4px !important;
+    font-size: 16px !important;
+    font-weight: 600 !important;
+    line-height: 1.2 !important;
+    cursor: pointer;
+}
+
+#cpiu-upload-modal .cpiu-done-btn:hover,
+#cpiu-upload-modal .cpiu-done-btn:focus-visible {
+    filter: brightness(0.92) !important;
+}
+
+#cpiu-upload-modal .cpiu-done-btn:focus-visible {
+    outline: 2px solid var(--cpiu-bg-color, #0073aa) !important;
+    outline-offset: 2px !important;
+}
+
 /* Theme conflict prevention for buttons - minimal !important usage */
 .cpiu-upload-btn,
 .cpiu-done-btn {
