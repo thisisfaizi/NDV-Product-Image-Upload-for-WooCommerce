@@ -620,3 +620,7 @@ no limit. Present since 1.0.0 (`3bfb7c4`). Earlier screenshot rigs seeded the op
 `resolution_validation:true, min_width:800, min_height:600, max_width:0, max_height:0` (read from `wp_options`).
 Customer upload of an 1800x1350 photo cropped to a heart then passes (1273x1163 stored).
 **Not run:** Default Settings save path in the browser (same code change), Plugin Check.
+
+## 2026-11-25 — 1.3.1 released (T-016, T-017, T-018)
+
+Faizi ran `svn ci`: SVN r3821517, tags/1.3.1. WP.org API reports version 1.3.1; the public zip `nowdigiverse-product-image-upload.1.3.1.zip` matches `main` (9e6a8d3) for all 8 changed files (`diff --strip-trailing-cr`).
