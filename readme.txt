@@ -107,6 +107,7 @@ You choose. On the "Uninstall Preferences" tab you can keep all data (default) o
 * Fixed: messages for products that need a single file now say "1 file" instead of "1 files".
 * Fixed: cropped images were saved at their on-screen size (often under 500 px wide) instead of the photo's own resolution. Crops now keep the original pixels (up to 4096 px per side), so print products get sharp files and resolution checks no longer reject cropped images. If a crop would exceed the product's file-size limit, it is scaled down just enough to fit.
 * Fixed: the order screen no longer shows the internal `_cpiu_original_filenames` field; file names still show under each uploaded file.
+* Fixed: a product configuration (or Default Settings) with a minimum image size and the maximum left at 0 ("no maximum") could not be saved; the admin screen showed "Failed to save configuration." A maximum of 0 now means no maximum, as the screen says.
 
 = 1.3.0 =
 * Added: a short request for an honest WordPress.org review. It appears only to administrators, only on this plugin's settings page and the Plugins screen, and only after the plugin has been in use for at least 14 days with at least one product configured. "Maybe later" hides it for 30 days; "Leave a review" or "I already did" hides it for good.

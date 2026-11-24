@@ -609,11 +609,11 @@ class CPIU_Data_Manager
                 return false;
             }
 
-            // Validate min/max relationships
-            if (isset($config['min_width']) && isset($config['max_width']) && $config['min_width'] > $config['max_width']) {
+            // Validate min/max relationships (a maximum of 0 means no maximum)
+            if (isset($config['min_width']) && !empty($config['max_width']) && $config['min_width'] > $config['max_width']) {
                 return false;
             }
-            if (isset($config['min_height']) && isset($config['max_height']) && $config['min_height'] > $config['max_height']) {
+            if (isset($config['min_height']) && !empty($config['max_height']) && $config['min_height'] > $config['max_height']) {
                 return false;
             }
         }
@@ -667,11 +667,11 @@ class CPIU_Data_Manager
                 return false;
             }
 
-            // Validate min/max relationships
-            if (isset($settings['min_width']) && isset($settings['max_width']) && $settings['min_width'] > $settings['max_width']) {
+            // Validate min/max relationships (a maximum of 0 means no maximum)
+            if (isset($settings['min_width']) && !empty($settings['max_width']) && $settings['min_width'] > $settings['max_width']) {
                 return false;
             }
-            if (isset($settings['min_height']) && isset($settings['max_height']) && $settings['min_height'] > $settings['max_height']) {
+            if (isset($settings['min_height']) && !empty($settings['max_height']) && $settings['min_height'] > $settings['max_height']) {
                 return false;
             }
         }

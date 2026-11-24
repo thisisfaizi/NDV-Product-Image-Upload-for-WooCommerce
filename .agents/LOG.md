@@ -604,3 +604,19 @@ meta is still stored and read as before).
 sizes, iOS Safari, full §5.1 regression, Plugin Check. Pro 1.4.1's shortcode enqueues this plugin's
 `cpiu-cropper.js` and `cpiu-frontend-multi-product.js` (`class-cpiu-pro-shortcode.php:209-212`), so it gets both fixes
 with no Pro change.
+
+## 2026-11-25 — T-018: min resolution with "no maximum" could not be saved → 1.3.1
+
+**Found** while recording the setup demo through the real Add Configuration form (Playground, 1.3.1 build):
+resolution validation on, min 800x600, max 0x0 → `cpiu_save_product_configuration` returned
+`{"success":false,"data":{"message":"Failed to save configuration."}}`. `validate_configuration()` and
+`validate_settings()` (`includes/class-cpiu-data-manager.php`) rejected `min_width > max_width` even when the max is
+0, which the form labels "0 = no maximum" and which `CPIU_Secure_Upload::validate_resolution` already treats as
+no limit. Present since 1.0.0 (`3bfb7c4`). Earlier screenshot rigs seeded the option directly, so they never hit it.
+
+**Changed:** the four min/max relationship checks use `!empty($max)` instead of `isset($max)`.
+
+**Evidence:** same form submit → `success:true`, page reloads, Existing Configurations lists the mug with
+`resolution_validation:true, min_width:800, min_height:600, max_width:0, max_height:0` (read from `wp_options`).
+Customer upload of an 1800x1350 photo cropped to a heart then passes (1273x1163 stored).
+**Not run:** Default Settings save path in the browser (same code change), Plugin Check.
